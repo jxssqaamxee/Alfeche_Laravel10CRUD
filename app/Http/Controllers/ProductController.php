@@ -13,10 +13,18 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $products = Product::latest()->paginate(5);
-        return view('index',compact('products'));
+        // $products = Product::latest()->paginate(5);
+        $products = Product::query();
+
+        if($request->has("q")) {
+            $products->where("name", "LIKE", "%".$request->get("q") . "%")
+                ->orWhere("description", "LIKE", "%".$request->get("q") . "%");
+        }
+        return view('products.index', [
+            "products" => $products->paginate(5)
+        ]);
     }
 
     /**
@@ -40,7 +48,7 @@ class ProductController extends Controller
 
         Product::create($request->all());
 
-        return redirect()->route('index')->with('success','Product created successfully.');
+        return redirect()->route('products.index')->with('success','Product created successfully.');
     }
 
     /**
@@ -48,7 +56,7 @@ class ProductController extends Controller
      */
     public function show(Product $product): View
     {
-        return view('show',compact('product'));
+        return view('products.show',compact('product'));
     }
 
     /**
@@ -56,7 +64,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product): View
     {
-        return view('edit',compact('product'));
+        return view('products.edit',compact('product'));
     }
 
     /**
@@ -73,7 +81,7 @@ class ProductController extends Controller
 
         $product->update($request->all());
 
-        return redirect()->route('index')->with('success','Product updated successfully');
+        return redirect()->route('products.index')->with('success','Product updated successfully');
     }
 
     /**
@@ -82,6 +90,23 @@ class ProductController extends Controller
     public function destroy(Product $product): RedirectResponse
     {
         $product->delete();
-        return redirect()->route('index')->with('success','Product deleted successfully');
+        return redirect()->route('products.index')->with('success','Product deleted successfully');
     }
+
 }
+
+    // public function index(Request $request): View
+    // {
+    //     $products = Product::query();
+        
+    //     if($request->has("q")) {
+    //         $products->where("name", "LIKE", "%".$request->get("q") . "%")
+    //             ->orWhere("description", "LIKE", "%".$request->get("q") . "%");
+    //     }
+
+    //     return view("products.index", [
+    //         "products" => $products->paginate(5)
+    //     ])
+    // }
+
+    

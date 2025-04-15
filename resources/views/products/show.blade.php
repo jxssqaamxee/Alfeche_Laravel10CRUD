@@ -2,6 +2,7 @@
 
 @section('content')
 
+
     <div class="card">
         <div class="card-header">
             <h2>
@@ -34,4 +35,3 @@
     </div>
 
 @endsection
-
